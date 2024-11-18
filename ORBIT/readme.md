@@ -5,3 +5,7 @@
 
 ## 11.17 Update
 #### This version realizes the visualization of the transfer orbit changing in real time with user input. More user input variables need to be further considered and incorporated.
+
+
+## 11.18 Update
+#### This version add user control with factors input (velocity, angle, fuel), and their restriction.
