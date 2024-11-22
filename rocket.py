@@ -1,44 +1,43 @@
 import streamlit as st
-import cv2
-import numpy as np
-import base64
+import replicate
 from PIL import Image
-import io
+import requests
+from io import BytesIO
 
+# 在此设置您的 Replicate API Token
+replicate_client = replicate.Client(api_token="r8_MeFEKgscN4NYt96L0Z4awdKSCFeEw4d3fUO")
 
-# 假设你的LoRA模型已经被加载
-# 这里使用一个占位函数来模拟模型的预测
-def lora_model_predict(image):
-    # 这里应该是你的LoRA模型的预测代码
-    # 例如：return model.predict(image)
-    return Image.fromarray(np.random.randint(0, 255, (300, 300, 3), dtype=np.uint8))
+# 然后使用该客户端进行 API 调用
+st.title("AI Image Generation with Replicate")
 
+# Input section
+st.header("Input")
+image_url = st.text_input("Enter the URL of a public image:", "https://example.com/image.png")
+prompt = st.text_input("Enter a description (prompt):", "a photo of a brightly colored turtle")
 
-def main():
-    st.title('火箭造型图片生成器')
+if st.button("Generate"):
+    if image_url and prompt:
+        try:
+            input_data = {
+                "image": image_url,
+                "prompt": prompt,
+            }
 
-    uploaded_file = st.file_uploader("上传你的手绘线稿", accept_multiple_files=False)
+            # Call Replicate API with authenticated client
+            st.write("Generating images...")
+            output = replicate_client.run(
+                "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
+                input=input_data,
+            )
 
-    if uploaded_file is not None:
-        # 将上传的文件转换为OpenCV图像格式
-        image = np.asarray(Image.open(uploaded_file))
+            # Display outputs
+            st.header("Generated Outputs")
+            for index, item in enumerate(output):
+                image_response = requests.get(item)  # Fetch generated image
+                output_image = Image.open(BytesIO(image_response.content))
+                st.image(output_image, caption=f"Output Image {index + 1}")
 
-        # 显示原始图片
-        st.image(image.tobytes(), caption='原始图片', use_column_width=True)
-
-        # Canny边缘检测
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        edges = cv2.Canny(gray, 100, 200)
-
-        # 显示边缘检测后的图片
-        st.image(edges, caption='Canny边缘检测结果', use_column_width=True)
-
-        # 使用LoRA模型生成火箭照片
-        generated_image = lora_model_predict(edges)
-
-        # 显示生成的火箭照片
-        st.image(generated_image, caption='生成的火箭照片', use_column_width=True)
-
-
-if __name__ == '__main__':
-    main()
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    else:
+        st.warning("Please enter a valid image URL and prompt.")
