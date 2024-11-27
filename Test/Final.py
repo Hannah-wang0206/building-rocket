@@ -159,5 +159,23 @@ elif target == "Venus" or target == "Mars":
 # Plot the selected target orbit based on user input
 plot_orbit(target=target, angle=angle, velocity=velocity, fuel=fuel)
 
+import streamlit as st
+from datetime import date
+
+# Streamlit app title
+st.title("火箭发射控制中心 🚀")
+
+# 用户输入火箭名称
+rocket_name = st.text_input("请输入火箭名称：", placeholder="例如：长征五号")
+
+# 用户选择发射日期
+launch_date = st.date_input("选择发射日期：", min_value=date.today())
+
+# 发射按钮
+if st.button("发射 🚀"):
+    if rocket_name and launch_date:
+        st.success(f"任务完成！火箭 **{rocket_name}** 已成功定于 **{launch_date}** 发射！")
+    else:
+        st.warning("请确保已输入火箭名称并选择发射日期。")
 
 
