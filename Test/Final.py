@@ -5,12 +5,11 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
-
-# Flask server configuration
-FLASK_SERVER_URL = "http://14.136.11.131:5000"  # 替换为实际的公网 IP
+from datetime import date
 
 # Replicate API setup
 replicate_client = replicate.Client(api_token="r8_MeFEKgscN4NYt96L0Z4awdKSCFeEw4d3fUO")
+
 
 # Constants for distances (in meters)
 celestial_bodies = {
@@ -98,15 +97,19 @@ def plot_orbit(target="Moon", angle=45, velocity=8000, fuel=500):
     except Exception as e:
         st.error(f"Error generating orbit: {e}")
 
-# Replicate API Image Generation Section
-st.sidebar.header("AI Image Generation")
+
+# AI Image Generation Section at the top
+st.title("SYNTHESIS SPACE PROGRAM 🧑‍🚀")
+st.header("AI Image Generation")
+image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png"  # 替换为实际图片的URL或本地路径
+st.image(image_url, use_container_width=True)
 uploaded_image = st.file_uploader("Upload an image:", type=["png", "jpg", "jpeg"])
 prompt = st.text_input("Enter a description (prompt):", "a photo of a real rocket")
 
 if st.button("Generate AI Image"):
     if uploaded_image and prompt:
         try:
-            temp_file_path = "./temp_uploaded_image.png"
+            temp_file_path = "../temp_uploaded_image.png"
             with open(temp_file_path, "wb") as temp_file:
                 temp_file.write(uploaded_image.read())
 
@@ -128,17 +131,34 @@ if st.button("Generate AI Image"):
     else:
         st.warning("Please upload an image and enter a prompt.")
 
-# Streamlit UI
-st.title("Orbital Path Visualization")
-st.sidebar.header("Input Parameters")
+# Orbital Path Visualization Section
+st.header("Orbital Path Parameters")
+
+# Create 4 horizontal columns for images
+col1, col2, col3, = st.columns(3)
+
+# You can display images like this:
+image_urls = [
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png",  # Replace with actual image URLs
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png",
+]
+
+# Loop to display images in columns
+with col1:
+    st.image(image_urls[0], caption="Moon")
+with col2:
+    st.image(image_urls[1], caption="Venus")
+with col3:
+    st.image(image_urls[2], caption="Mars")
 
 # Target selection
-target = st.sidebar.selectbox("Select Target Planet", ["Moon", "Venus", "Mars"])
+target = st.selectbox("Select Target Planet", ["Moon", "Venus", "Mars"])
 
 # User input for velocity (in m/s), angle (in degrees), and fuel (in arbitrary units)
-angle = st.sidebar.slider("Launch Angle (degrees)", 0, 90, 45)
-velocity = st.sidebar.slider("Launch Velocity (m/s)", 3000, 15000, 8000)
-fuel = st.sidebar.slider("Fuel Amount (arbitrary units)", 100, 1000, 500)
+angle = st.slider("Launch Angle (degrees)", 0, 90, 45)
+velocity = st.slider("Launch Velocity (m/s)", 3000, 15000, 8000)
+fuel = st.slider("Fuel Amount (arbitrary units)", 100, 1000, 500)
 
 # Apply limits and display warning if needed
 if target == "Moon":
@@ -159,23 +179,16 @@ elif target == "Venus" or target == "Mars":
 # Plot the selected target orbit based on user input
 plot_orbit(target=target, angle=angle, velocity=velocity, fuel=fuel)
 
-import streamlit as st
-from datetime import date
+# Rocket Launch Control Center Section at the bottom
+st.header("Rocket Launch Control Center 🚀")
 
-# Streamlit app title
-st.title("火箭发射控制中心 🚀")
+# Rocket input section
+rocket_name = st.text_input("Enter rocket name:", placeholder="e.g., Long March 5")
+launch_date = st.date_input("Select launch date:", min_value=date.today())
 
-# 用户输入火箭名称
-rocket_name = st.text_input("请输入火箭名称：", placeholder="例如：长征五号")
-
-# 用户选择发射日期
-launch_date = st.date_input("选择发射日期：", min_value=date.today())
-
-# 发射按钮
-if st.button("发射 🚀"):
+# Launch button
+if st.button("Launch Rocket 🚀"):
     if rocket_name and launch_date:
-        st.success(f"任务完成！火箭 **{rocket_name}** 已成功定于 **{launch_date}** 发射！")
+        st.success(f"Mission Complete! Rocket **{rocket_name}** is successfully scheduled for launch on **{launch_date}**!")
     else:
-        st.warning("请确保已输入火箭名称并选择发射日期。")
-
-
+        st.warning("Please ensure rocket name and launch date are entered.")
