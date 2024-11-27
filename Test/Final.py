@@ -98,6 +98,36 @@ def plot_orbit(target="Moon", angle=45, velocity=8000, fuel=500):
     except Exception as e:
         st.error(f"Error generating orbit: {e}")
 
+# Replicate API Image Generation Section
+st.sidebar.header("AI Image Generation")
+uploaded_image = st.file_uploader("Upload an image:", type=["png", "jpg", "jpeg"])
+prompt = st.text_input("Enter a description (prompt):", "a photo of a real rocket")
+
+if st.button("Generate AI Image"):
+    if uploaded_image and prompt:
+        try:
+            temp_file_path = "./temp_uploaded_image.png"
+            with open(temp_file_path, "wb") as temp_file:
+                temp_file.write(uploaded_image.read())
+
+            with open(temp_file_path, "rb") as image_file:
+                input_data = {"image": image_file, "prompt": prompt}
+                st.write("Generating images...")
+                output = replicate_client.run(
+                    "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
+                    input=input_data,
+                )
+
+            st.header("Generated Images")
+            for index, item in enumerate(output):
+                image_response = requests.get(item)
+                output_image = Image.open(BytesIO(image_response.content))
+                st.image(output_image, caption=f"Output Image {index + 1}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    else:
+        st.warning("Please upload an image and enter a prompt.")
+
 # Streamlit UI
 st.title("Orbital Path Visualization")
 st.sidebar.header("Input Parameters")
@@ -129,56 +159,5 @@ elif target == "Venus" or target == "Mars":
 # Plot the selected target orbit based on user input
 plot_orbit(target=target, angle=angle, velocity=velocity, fuel=fuel)
 
-# Image Upload with Public URL Generation Section
-st.header("Upload an image to get a public URL")
-uploaded_image = st.file_uploader("Choose an image to upload", type=["png", "jpg", "jpeg"])
 
-if uploaded_image is not None:
-    if st.button("Generate Public URL"):
-        try:
-            # Send the uploaded file to Flask server
-            files = {"file": (uploaded_image.name, uploaded_image, uploaded_image.type)}
-            response = requests.post(FLASK_SERVER_URL, files=files)
 
-            if response.status_code == 200:
-                public_url = response.json()["url"]
-                st.success("Public URL generated successfully!")
-                st.write(public_url)
-                st.image(public_url, caption="Uploaded Image", use_column_width=True)
-            else:
-                st.error(f"Failed to upload image. Error: {response.text}")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-
-# Replicate API Image Generation Section
-st.header("Generate Image with Replicate")
-
-image_url = st.text_input("Enter the URL of a public image:", "https://img1.baidu.com/it/u=3813998746,3056511910&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=711")
-prompt = st.text_input("Enter a description (prompt):", "a photo of a real rocket")
-
-if st.button("Generate"):
-    if image_url and prompt:
-        try:
-            input_data = {
-                "image": image_url,
-                "prompt": prompt,
-            }
-
-            # Call Replicate API with authenticated client
-            st.write("Generating images...")
-            output = replicate_client.run(
-                "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
-                input=input_data,
-            )
-
-            # Display outputs
-            st.header("Generated Outputs")
-            for index, item in enumerate(output):
-                image_response = requests.get(item)  # Fetch generated image
-                output_image = Image.open(BytesIO(image_response.content))
-                st.image(output_image, caption=f"Output Image {index + 1}")
-
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-    else:
-        st.warning("Please enter a valid image URL and prompt.")
