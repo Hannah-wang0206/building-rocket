@@ -100,13 +100,17 @@ def plot_orbit(target="Moon", angle=45, velocity=8000, fuel=500):
 
 # AI Image Generation Section at the top
 st.title("SYNTHESIS SPACE PROGRAM 🧑‍🚀")
-st.header("AI Image Generation")
-image_url = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png"  # 替换为实际图片的URL或本地路径
+st.text("🔭Welcome to our interactive page on aerospace science.\n 🚀Here you will have the opportunity to take on the role of an aerospace worker and experience the  entire process from designing to launching a rocket. \n ☄️Now, let's begin this exciting journey into space! ")
+st.write("")
+st.write("")
+st.header("💫💫Start designing your rocket")
+st.caption("Let's start with the 4 most basic parts of a rocket")
+image_url = "https://s2.loli.net/2024/11/28/ei4AdQcmj7sgol6.png"  # 替换为实际图片的URL或本地路径
 st.image(image_url, use_container_width=True)
-uploaded_image = st.file_uploader("Upload an image:", type=["png", "jpg", "jpeg"])
-prompt = st.text_input("Enter a description (prompt):", "a photo of a real rocket")
+uploaded_image = st.file_uploader("Upload your sketch:", type=["png", "jpg", "jpeg"])
+prompt = ("a photo of a real rocket")
 
-if st.button("Generate AI Image"):
+if st.button("Build a rocket"):
     if uploaded_image and prompt:
         try:
             temp_file_path = "../temp_uploaded_image.png"
@@ -115,13 +119,13 @@ if st.button("Generate AI Image"):
 
             with open(temp_file_path, "rb") as image_file:
                 input_data = {"image": image_file, "prompt": prompt}
-                st.write("Generating images...")
+                st.write("⏳Your rocket is under construction, please wait a moment...")
                 output = replicate_client.run(
                     "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
                     input=input_data,
                 )
 
-            st.header("Generated Images")
+            st.header("Your rocket design is complete")
             for index, item in enumerate(output):
                 image_response = requests.get(item)
                 output_image = Image.open(BytesIO(image_response.content))
@@ -131,17 +135,23 @@ if st.button("Generate AI Image"):
     else:
         st.warning("Please upload an image and enter a prompt.")
 
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+
 # Orbital Path Visualization Section
-st.header("Orbital Path Parameters")
+st.header("💫💫Orbital Path Parameters")
 
 # Create 4 horizontal columns for images
 col1, col2, col3, = st.columns(3)
 
 # You can display images like this:
 image_urls = [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png",  # Replace with actual image URLs
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png/1200px-Mars_-_August_30_2021_-_Flickr_-_Kevin_M._Gill.png",
+    "https://s2.loli.net/2024/11/28/cwjS8pQozguIPFL.png",  # Replace with actual image URLs
+    "https://s2.loli.net/2024/11/28/7e1tOFQESTp2Ubo.png",
+    "https://s2.loli.net/2024/11/28/zBDXmU6TpgQNHki.png",
 ]
 
 # Loop to display images in columns
@@ -179,8 +189,14 @@ elif target == "Venus" or target == "Mars":
 # Plot the selected target orbit based on user input
 plot_orbit(target=target, angle=angle, velocity=velocity, fuel=fuel)
 
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+
 # Rocket Launch Control Center Section at the bottom
-st.header("Rocket Launch Control Center 🚀")
+st.header("💫💫Rocket Launch Control Center")
 
 # Rocket input section
 rocket_name = st.text_input("Enter rocket name:", placeholder="e.g., Long March 5")
@@ -190,5 +206,6 @@ launch_date = st.date_input("Select launch date:", min_value=date.today())
 if st.button("Launch Rocket 🚀"):
     if rocket_name and launch_date:
         st.success(f"Mission Complete! Rocket **{rocket_name}** is successfully scheduled for launch on **{launch_date}**!")
+        st.info("🎖️With the successful launch of the rocket, our horizons expanded to the vastness of the universe. It was a successful leap that not only enhanced our technology but also stimulated our curiosity about the unknown.")
     else:
         st.warning("Please ensure rocket name and launch date are entered.")
