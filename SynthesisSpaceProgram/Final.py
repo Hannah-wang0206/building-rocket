@@ -5,12 +5,11 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
-
-# Flask server configuration
-FLASK_SERVER_URL = "http://14.136.11.131:5000"  # 替换为实际的公网 IP
+from datetime import date
 
 # Replicate API setup
 replicate_client = replicate.Client(api_token="r8_MeFEKgscN4NYt96L0Z4awdKSCFeEw4d3fUO")
+
 
 # Constants for distances (in meters)
 celestial_bodies = {
@@ -98,17 +97,78 @@ def plot_orbit(target="Moon", angle=45, velocity=8000, fuel=500):
     except Exception as e:
         st.error(f"Error generating orbit: {e}")
 
-# Streamlit UI
-st.title("Orbital Path Visualization")
-st.sidebar.header("Input Parameters")
+
+# AI Image Generation Section at the top
+st.title("SYNTHESIS SPACE PROGRAM 🧑‍🚀")
+st.text("🔭Welcome to our interactive page on aerospace science.\n 🚀Here you will have the opportunity to take on the role of an aerospace worker and experience the  entire process from designing to launching a rocket. \n ☄️Now, let's begin this exciting journey into space! ")
+st.write("")
+st.write("")
+st.header("💫💫Start designing your rocket")
+st.caption("Let's start with the 4 most basic parts of a rocket")
+image_url = "https://s2.loli.net/2024/11/28/ei4AdQcmj7sgol6.png"  # 替换为实际图片的URL或本地路径
+st.image(image_url, use_container_width=True)
+uploaded_image = st.file_uploader("Upload your sketch:", type=["png", "jpg", "jpeg"])
+prompt = ("a photo of a real rocket")
+
+if st.button("Build a rocket"):
+    if uploaded_image and prompt:
+        try:
+            temp_file_path = "../temp_uploaded_image.png"
+            with open(temp_file_path, "wb") as temp_file:
+                temp_file.write(uploaded_image.read())
+
+            with open(temp_file_path, "rb") as image_file:
+                input_data = {"image": image_file, "prompt": prompt}
+                st.write("⏳Your rocket is under construction, please wait a moment...")
+                output = replicate_client.run(
+                    "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
+                    input=input_data,
+                )
+
+            st.header("Your rocket design is complete")
+            for index, item in enumerate(output):
+                image_response = requests.get(item)
+                output_image = Image.open(BytesIO(image_response.content))
+                st.image(output_image, caption=f"Output Image {index + 1}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+    else:
+        st.warning("Please upload an image and enter a prompt.")
+
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+
+# Orbital Path Visualization Section
+st.header("💫💫Orbital Path Parameters")
+
+# Create 4 horizontal columns for images
+col1, col2, col3, = st.columns(3)
+
+# You can display images like this:
+image_urls = [
+    "https://s2.loli.net/2024/11/28/cwjS8pQozguIPFL.png",  # Replace with actual image URLs
+    "https://s2.loli.net/2024/11/28/7e1tOFQESTp2Ubo.png",
+    "https://s2.loli.net/2024/11/28/zBDXmU6TpgQNHki.png",
+]
+
+# Loop to display images in columns
+with col1:
+    st.image(image_urls[0], caption="Moon")
+with col2:
+    st.image(image_urls[1], caption="Venus")
+with col3:
+    st.image(image_urls[2], caption="Mars")
 
 # Target selection
-target = st.sidebar.selectbox("Select Target Planet", ["Moon", "Venus", "Mars"])
+target = st.selectbox("Select Target Planet", ["Moon", "Venus", "Mars"])
 
 # User input for velocity (in m/s), angle (in degrees), and fuel (in arbitrary units)
-angle = st.sidebar.slider("Launch Angle (degrees)", 0, 90, 45)
-velocity = st.sidebar.slider("Launch Velocity (m/s)", 3000, 15000, 8000)
-fuel = st.sidebar.slider("Fuel Amount (arbitrary units)", 100, 1000, 500)
+angle = st.slider("Launch Angle (degrees)", 0, 90, 45)
+velocity = st.slider("Launch Velocity (m/s)", 3000, 15000, 8000)
+fuel = st.slider("Fuel Amount (arbitrary units)", 100, 1000, 500)
 
 # Apply limits and display warning if needed
 if target == "Moon":
@@ -129,56 +189,23 @@ elif target == "Venus" or target == "Mars":
 # Plot the selected target orbit based on user input
 plot_orbit(target=target, angle=angle, velocity=velocity, fuel=fuel)
 
-# Image Upload with Public URL Generation Section
-st.header("Upload an image to get a public URL")
-uploaded_image = st.file_uploader("Choose an image to upload", type=["png", "jpg", "jpeg"])
+st.write("")
+st.write("")
+st.write("")
+st.write("")
+st.write("")
 
-if uploaded_image is not None:
-    if st.button("Generate Public URL"):
-        try:
-            # Send the uploaded file to Flask server
-            files = {"file": (uploaded_image.name, uploaded_image, uploaded_image.type)}
-            response = requests.post(FLASK_SERVER_URL, files=files)
+# Rocket Launch Control Center Section at the bottom
+st.header("💫💫Rocket Launch Control Center")
 
-            if response.status_code == 200:
-                public_url = response.json()["url"]
-                st.success("Public URL generated successfully!")
-                st.write(public_url)
-                st.image(public_url, caption="Uploaded Image", use_column_width=True)
-            else:
-                st.error(f"Failed to upload image. Error: {response.text}")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+# Rocket input section
+rocket_name = st.text_input("Enter rocket name:", placeholder="e.g., Long March 5")
+launch_date = st.date_input("Select launch date:", min_value=date.today())
 
-# Replicate API Image Generation Section
-st.header("Generate Image with Replicate")
-
-image_url = st.text_input("Enter the URL of a public image:", "https://img1.baidu.com/it/u=3813998746,3056511910&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=711")
-prompt = st.text_input("Enter a description (prompt):", "a photo of a real rocket")
-
-if st.button("Generate"):
-    if image_url and prompt:
-        try:
-            input_data = {
-                "image": image_url,
-                "prompt": prompt,
-            }
-
-            # Call Replicate API with authenticated client
-            st.write("Generating images...")
-            output = replicate_client.run(
-                "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
-                input=input_data,
-            )
-
-            # Display outputs
-            st.header("Generated Outputs")
-            for index, item in enumerate(output):
-                image_response = requests.get(item)  # Fetch generated image
-                output_image = Image.open(BytesIO(image_response.content))
-                st.image(output_image, caption=f"Output Image {index + 1}")
-
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+# Launch button
+if st.button("Launch Rocket 🚀"):
+    if rocket_name and launch_date:
+        st.success(f"Mission Complete! Rocket **{rocket_name}** is successfully scheduled for launch on **{launch_date}**!")
+        st.info("🎖️With the successful launch of the rocket, our horizons expanded to the vastness of the universe. It was a successful leap that not only enhanced our technology but also stimulated our curiosity about the unknown.")
     else:
-        st.warning("Please enter a valid image URL and prompt.")
+        st.warning("Please ensure rocket name and launch date are entered.")
