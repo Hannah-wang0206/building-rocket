@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project represents the initial concept of both the frontend and backend for a web-based application. The application demonstrates a web interface and server-side operations for generating images based on user input.
+This represents the initial concept of both the frontend and backend for a web-based application. 
 
 ## Timeline
 
