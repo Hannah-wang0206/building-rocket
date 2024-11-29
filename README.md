@@ -20,5 +20,7 @@ If you don't have time to sketch, you can save and use these examples to experie
 <img width="500" alt="rocket3" src="https://github.com/user-attachments/assets/f34a8e36-27cf-4833-aae1-0ddb3d2ce377">
 <img width="1161" alt="rocket2" src="https://github.com/user-attachments/assets/30e1a164-9b20-45ad-9c31-7ff432c99a75">
 
-
+# Postscrip
+Please use a version of Streamlit higher than 1.40.1.
+For a better visual experience, please run the app, click on the settings in the upper right corner, and change the color scheme to dark mode.
 
