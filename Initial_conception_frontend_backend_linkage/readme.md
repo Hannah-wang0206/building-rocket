@@ -1,4 +1,4 @@
-# ## Future Development Directions: Frontend and Backend Version
+# Future Development Directions: Frontend and Backend Version
 
 ## Overview
 
