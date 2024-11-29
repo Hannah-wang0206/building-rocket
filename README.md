@@ -14,8 +14,8 @@ pip install -r SynthesisSpaceProgram/requirements.txt
 streamlit run SynthesisSpaceProgram/Final.py
 ```
 # Postscrip
-Please use a version of Streamlit higher than 1.40.1.
-  For a better visual experience, please run the app, click on the settings in the upper right corner, and change the color scheme to dark mode.
+Please use a version of Streamlit higher than 1.40.1.  
+For a better visual experience, please run the app, click on the settings in the upper right corner, and change the color scheme to dark mode.  
 
 # Rocket Sketch
 If you don't have time to sketch, you can save and use these examples to experience our app.
