@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 6 - Launch Parameters</title>
+    <style>
+        body {
+            background-image: url('assets/images/Page6/01.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: space-between; /* 上下两端对齐 */
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        #header {
+            margin-top: 220px; /* 调整顶部间距 */
+        }
+
+        h1 {
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px; /* 添加间距 */
+        }
+
+        h2 {
+            color: white;
+            font-size: 1.5em;
+            margin-top: 5px; /* 减少间距 */
+        }
+
+        .btn {
+            background-image: url('assets/images/Page6/02.png');
+            background-size: cover;
+            border: none;
+            width: 129px; /* 设置按钮宽度 */
+            height: 29px; /* 设置按钮高度 */
+            margin-bottom: 40px; /* 调整底部间距 */
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background-image: url('assets/images/Page6/03.png');
+        }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <h1 id="mission-title"></h1>
+        <h2 id="project-details"></h2>
+    </div>
+
+    <a href="#" onclick="validateParameters()">
+        <button class="btn"></button>
+    </a>
+
+    <script>
+        // 获取 URL 参数
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // 验证参数
+        function validateParameters() {
+            const planet = getQueryParam('planet');
+            const launch_angle = parseFloat(getQueryParam('launch_angle'));
+            const launch_speed = parseFloat(getQueryParam('launch_speed'));
+            const fuel_amount = parseFloat(getQueryParam('fuel_amount'));
+
+            // 定义星球参数限制
+            const planet_parameters = {
+                'Moon': {
+                    'launch_angle': {'min': 0, 'max': 90},
+                    'launch_speed': {'min': 5000, 'max': 12000},
+                    'fuel_amount': {'min': 200, 'max': 900}
+                },
+                'Venus': {
+                    'launch_angle': {'min': 0, 'max': 90},
+                    'launch_speed': {'min': 10000, 'max': 30000},
+                    'fuel_amount': {'min': 300, 'max': 1000}
+                },
+                'Mars': {
+                    'launch_angle': {'min': 0, 'max': 90},
+                    'launch_speed': {'min': 10000, 'max': 30000},
+                    'fuel_amount': {'min': 300, 'max': 1000}
+                }
+            };
+
+            // 获取当前星球的参数限制
+            const params = planet_parameters[planet];
+
+            // 检查每个参数是否在合法范围内
+            const valid_angle = params.launch_angle.min <= launch_angle && launch_angle <= params.launch_angle.max;
+            const valid_speed = params.launch_speed.min <= launch_speed && launch_speed <= params.launch_speed.max;
+            const valid_fuel = params.fuel_amount.min <= fuel_amount && fuel_amount <= params.fuel_amount.max;
+
+            if (valid_angle && valid_speed && valid_fuel) {
+                window.location.href = "/page8";
+            } else {
+                window.location.href = "/page7?" + new URLSearchParams({
+                    launch_date: getQueryParam('launch_date')
+                });
+            }
+        }
+
+        // 初始化页面内容
+        document.addEventListener("DOMContentLoaded", () => {
+            const planet = getQueryParam('planet');
+            const project_name = decodeURIComponent(getQueryParam('project_name'));
+            const launch_date = decodeURIComponent(getQueryParam('launch_date'));
+
+            console.log('Planet:', planet);
+            console.log('Project Name:', project_name);
+            console.log('Launch Date:', launch_date);
+
+            document.getElementById('mission-title').textContent = `Mission to ${planet}`;
+            document.getElementById('project-details').textContent = `${project_name} - ${launch_date}`;
+
+            // 检查是否正确获取了参数
+            if (!planet || !project_name || !launch_date) {
+                alert('One or more parameters are missing.');
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
+

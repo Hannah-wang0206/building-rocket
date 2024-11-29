@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 3</title>
+    <style>
+        /* 页面整体样式 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('assets/images/Page3/01.jpg'); /* 设置背景图片 */
+            background-size: cover; /* 背景图自适应 */
+            background-position: center; /* 背景图居中 */
+            height: 100vh; /* 页面高度占满整个视口 */
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // 页面加载后2秒跳转到 /page4
+        window.onload = function() {
+            setTimeout(function() {
+                window.location.href = '/page4';
+            }, 1000); // 2秒后跳转
+        };
+    </script>
+</body>
+</html>

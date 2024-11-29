@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('assets/images/Page2/01.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .button-container {
+            position: absolute;
+            bottom: 10%;
+            left: 54%;
+            display: flex;
+            gap: 50px;
+        }
+
+        .button-left {
+            background-image: url('assets/images/Page2/02.png');
+            width: 362px;
+            height: 45px;
+            border: none;
+            background-size: cover;
+            cursor: pointer;
+            transition: background-image 0.3s ease;
+        }
+
+        .button-left:hover {
+            background-image: url('assets/images/Page2/03.png');
+        }
+
+        .button-right {
+            background-image: url('assets/images/Page2/04.png');
+            width: 174px;
+            height: 56px;
+            border: none;
+            background-size: cover;
+            cursor: pointer;
+            transition: background-image 0.3s ease;
+        }
+
+        .button-right:hover {
+            background-image: url('assets/images/Page2/05.png');
+        }
+
+        .top-interface {
+            position: absolute;
+            top: 3%;
+            left: 75%;
+            transform: translateX(-50%);
+            background-image: url('assets/images/Page2/06.png');
+            width: 600px;
+            height: 550px;
+            background-size: cover;
+            z-index: 1;
+        }
+
+        /* 用于覆盖在 top-interface 上的上传图片 */
+        .uploaded-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 2; /* 确保上传的图片在 top-interface 上方 */
+        }
+    </style>
+</head>
+<body>
+    <div class="top-interface" id="interfaceImage"></div>
+    <div class="button-container">
+        <button class="button-left" onclick="triggerImageUpload()"></button>
+        <button class="button-right" onclick="goToPage3()"></button>
+    </div>
+
+    <!-- 隐藏的文件上传按钮 -->
+    <input type="file" id="uploadImageInput" style="display:none" />
+
+    <script>
+        // 触发文件选择框
+        function triggerImageUpload() {
+            document.getElementById('uploadImageInput').click();
+        }
+
+        // 上传并显示图片
+        document.getElementById('uploadImageInput').addEventListener('change', function(e) {
+            const fileInput = e.target;
+            if (fileInput.files.length === 0) return;
+
+            // 清除前一次上传的图片
+            const previousImage = document.querySelector('.uploaded-image');
+            if (previousImage) {
+                previousImage.remove();
+            }
+
+            // 显示上传的图片
+            const uploadedImage = document.createElement('img');
+            uploadedImage.src = URL.createObjectURL(fileInput.files[0]); // 使用本地上传的图像
+            uploadedImage.classList.add('uploaded-image');
+            document.querySelector('.top-interface').appendChild(uploadedImage); // 将上传的图片覆盖在 top-interface 上
+
+            // 等待 5 秒钟后开始图像生成的请求
+            setTimeout(function() {
+                // 发送图像生成请求到后端
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+                formData.append('prompt', 'a photo of a real rocket');  // 你可以自定义描述文本
+
+                fetch('/upload_image', {  // 修改为绝对路径
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response from server:', data); // 添加日志
+                    if (data.success) {
+                        const imageUrl = data.image_url;
+                        sessionStorage.setItem('generatedImageUrl', imageUrl); // 存储生成的图像 URL
+                        alert('Image generated successfully!'); // 添加提示
+                    } else {
+                        alert('Image generation failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error); // 添加日志
+                    alert('An error occurred, please try again');
+                });
+            }, 5000); // 5秒后开始请求
+        });
+
+        // 点击右边按钮，跳转到 /page3
+        function goToPage3() {
+            window.location.href = '/page3';  // 修改为绝对路径
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
